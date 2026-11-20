@@ -33,9 +33,25 @@
 
   var form = $("#buscador"), input = $("#nombre"), btn = $("#ver"), err = $("#nombre-err");
   var resultado = $("#resultado"), saludo = $("#saludo");
-  var MENSAJE = $("#mensaje").textContent;
+  // "homenajeados": cada quien ve sus años. "homenajes": jefe/supervisor ve a quiénes reconoce.
+  var HOMENAJES = document.body.dataset.pagina === "homenajes";
   var personas = [];
   var nombres = {}; // nombre normalizado → nombre tal como está en la hoja
+
+  // Logo de aniversario (assets/img/anios-N). null si no hay logo para esos años.
+  var LOGOS = ["5", "10", "15", "20", "30"];
+  function logo(n) {
+    if (LOGOS.indexOf(n) === -1) return null;
+    var pic = document.createElement("picture");
+    var src = document.createElement("source");
+    src.type = "image/webp";
+    src.srcset = "../assets/img/anios-" + n + ".webp";
+    var img = document.createElement("img");
+    img.src = "../assets/img/anios-" + n + ".png";
+    img.alt = n + " " + anios(n);
+    pic.append(src, img);
+    return pic;
+  }
 
   function error(msg) {
     err.textContent = msg;
@@ -49,16 +65,16 @@
       return Promise.resolve(CONFIG.demo);
     }
     return fetch(CONFIG.APPS_SCRIPT_URL).then(function (r) { return r.json(); }).then(function (d) {
-      if (!d.ok || !Array.isArray(d.personas)) throw new Error(d.error || "respuesta inválida");
-      return d.personas;
+      if (!d.ok || !Array.isArray(d.homenajeados) || !Array.isArray(d.homenajes)) throw new Error(d.error || "respuesta inválida");
+      return d;
     });
   }
 
-  cargar().then(function (lista) {
-    personas = lista;
-    // Quien homenajea aparece en la lista aunque no tenga fila propia en la hoja.
-    lista.forEach(function (p) {
-      [p.nombre, p.homenajeadoPor].forEach(function (n) {
+  cargar().then(function (d) {
+    personas = HOMENAJES ? d.homenajes : d.homenajeados;
+    // En /homenajes se busca a quien entrega (jefe o supervisor); en /homenajeados, al homenajeado.
+    personas.forEach(function (p) {
+      (HOMENAJES ? [p.jefe, p.supervisor] : [p.nombre]).forEach(function (n) {
         var k = norm(n);
         if (k && !nombres[k]) nombres[k] = String(n).trim();
       });
@@ -66,7 +82,7 @@
     todos = Object.keys(nombres).map(function (k) { return nombres[k]; })
       .sort(function (a, b) { return a.localeCompare(b, "es"); });
     input.disabled = btn.disabled = false;
-    input.placeholder = "Ej.: Ana Torres";
+    input.placeholder = HOMENAJES ? "Ej.: Jorge Ramos" : "Ej.: Ana Torres";
   }).catch(function (e) {
     console.error("[Informativo] No se pudo cargar la hoja:", e);
     input.placeholder = "";
@@ -147,41 +163,46 @@
   });
 
   function mostrar(k) {
-    var yo = personas.filter(function (p) { return norm(p.nombre) === k; })[0] || {};
-    var rol = norm(yo.rol);
-    var esHomenajeado = rol === "homenajeado" || rol === "homenajeada";
-    var esEspecial = rol.indexOf("invitad") === 0;
-    // Los invitados especiales (alta gerencia) no homenajean a nadie.
-    var aCargo = esEspecial ? [] : personas.filter(function (p) { return norm(p.homenajeadoPor) === k; });
-
     saludo.textContent = nombres[k];
 
-    $("#r-homenajeado").hidden = !esHomenajeado;
-    if (esHomenajeado) {
-      $("#anios").textContent = yo.anios;
-      $(".years-lbl").textContent = anios(yo.anios) + " de servicio";
-      $("#mensaje").textContent = yo.mensaje || MENSAJE;
+    if (HOMENAJES) {
+      // Agrupa por años (de más a menos): un logo por grupo y debajo todos sus nombres.
+      var grupos = {};
+      personas.forEach(function (p) {
+        if (norm(p.jefe) !== k && norm(p.supervisor) !== k) return;
+        (grupos[p.anios] = grupos[p.anios] || []).push(p.nombre);
+      });
+      var box = $("#homenajeados");
+      box.replaceChildren();
+      Object.keys(grupos).sort(function (a, b) { return b - a; }).forEach(function (n) {
+        var g = document.createElement("div");
+        g.className = "group";
+        // El logo ya dice "N años"; sin logo, se escriben los años.
+        var t = logo(n);
+        if (!t) {
+          t = document.createElement("p");
+          t.className = "years-lbl";
+          t.textContent = n + " " + anios(n);
+        }
+        var ul = document.createElement("ul");
+        ul.className = "people";
+        grupos[n].forEach(function (nombre) {
+          var li = document.createElement("li");
+          li.textContent = nombre;
+          ul.appendChild(li);
+        });
+        g.append(t, ul);
+        box.appendChild(g);
+      });
+    } else {
+      var yo = personas.filter(function (p) { return norm(p.nombre) === k; })[0];
+      var pic = logo(yo.anios);
+      var txt = yo.anios + " " + anios(yo.anios);
+      $("#logo").replaceChildren(pic || "");
+      // El logo ya dice "N años"; sin logo, se escriben los años.
+      $("#anios").textContent = (pic ? "" : txt + " ") + "de trayectoria en Metso";
+      $("#anios-txt").textContent = txt;
     }
-
-    $("#r-homenajeador").hidden = !aCargo.length;
-    var ul = $("#homenajeados");
-    ul.replaceChildren();
-    aCargo.forEach(function (p) {
-      var li = document.createElement("li");
-      var n = document.createElement("span");
-      n.textContent = p.nombre;
-      li.appendChild(n);
-      if (p.anios) {
-        var y = document.createElement("span");
-        y.className = "yrs";
-        y.textContent = p.anios + " " + anios(p.anios);
-        li.appendChild(y);
-      }
-      ul.appendChild(li);
-    });
-
-    $("#r-especial").hidden = !esEspecial;
-    $("#r-ninguno").hidden = esHomenajeado || esEspecial || aCargo.length > 0;
 
     resultado.hidden = false;
     saludo.focus({ preventScroll: true });

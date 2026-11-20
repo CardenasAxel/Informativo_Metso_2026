@@ -134,7 +134,7 @@ h3 { margin: .75rem 0 .25rem; font: italic 500 1.5rem/1.2 var(--serif); color: v
   background: radial-gradient(circle at 50% 30%, rgba(242, 217, 166, .12), transparent 70%), var(--surface);
   box-shadow: 0 0 18px rgba(201, 163, 107, .22);
 }
-.ic svg, .note svg, .privacy svg {
+.ic svg, .note svg {
   fill: none; stroke: var(--gold-light); stroke-width: 1.6;
   stroke-linecap: round; stroke-linejoin: round;
 }
@@ -298,13 +298,48 @@ input[type="text"]:focus-visible { border-color: var(--gold); outline-offset: 2p
 .greeting:focus { outline: none; }
 .years { margin: .5rem 0 0; font: italic 500 clamp(4.5rem, 24vw, 6.5rem)/1 var(--serif); }
 .years-lbl { margin: 0 0 1rem !important; font-size: .75rem; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-mid); }
-.people { margin: 1rem 0 0; padding: 0; list-style: none; text-align: left; }
-.people li {
-  display: flex; justify-content: space-between; align-items: baseline; gap: 1rem;
-  padding: .75rem 0; border-bottom: 1px solid var(--line);
+/* Logos de aniversario (assets/img/anios-N) */
+/* Logos de años sobre el fondo negro (sin tarjeta), con brillo de roca dorada */
+.badge { text-align: center; }
+.badge-art { position: relative; width: fit-content; margin: .5rem auto 0; }
+.logo-anios img { display: block; width: auto; max-width: 100%; height: clamp(190px, 56vw, 260px); margin: 0 auto; }
+/* Halo dorado detrás del logo + pulso de brillo (mismo "glow" de las rocas) */
+.badge-art, .group picture { isolation: isolate; }
+.badge-art::before, .group picture::before {
+  content: ""; position: absolute; inset: -12% -18%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(235, 199, 137, .28), rgba(182, 134, 96, .1) 55%, transparent);
+  animation: halo 7s ease-in-out infinite;
 }
-.people li:last-child { border-bottom: 0; }
-.people .yrs { flex: none; font: italic 500 1.25rem/1.2 var(--serif); color: var(--gold-light); }
+.logo-anios img, .group picture img { animation: glow 7s ease-in-out infinite; }
+@keyframes halo { 50% { opacity: .55; transform: scale(.94); } }
+.badge-art .g1 { top: 14%; left: 66%; }
+.badge-art .g2 { top: 52%; left: 80%; }
+.badge-lbl { margin: .75rem 0 0; font: 400 1.05rem/1.4 var(--sans); letter-spacing: .04em; color: #fff; }
+.badge > h3 { margin-bottom: 1.25rem; }
+/* "Gracias por…": título grande en dorado, como en la guía */
+.event { margin-top: 2.5rem; }
+.event-head { margin: 0 0 1rem; font-size: clamp(2.1rem, 9vw, 2.9rem); line-height: 1.1; text-wrap: balance; }
+.greeting { font: 700 clamp(1.9rem, 8vw, 2.6rem)/1.15 var(--sans); font-style: normal; color: #fff; }
+
+/* Homenajes: un logo por grupo de años y debajo sus nombres */
+.groups { display: grid; gap: 1.5rem; margin-top: 1rem; }
+.group + .group { padding-top: 1.5rem; border-top: 1px solid var(--line); }
+.group picture { position: relative; width: fit-content; }
+.group picture img { width: auto; height: 110px; margin: 0 auto; }
+.group picture, .group .years-lbl { display: block; margin: 0 auto .5rem !important; }
+.people { margin: 0; padding: 0; list-style: none; }
+.people li { padding: .35rem 0; }
+
+/* Datos del evento */
+.event > p { max-width: 40ch; margin: 0 auto; }
+.event-box { width: fit-content; max-width: 100%; margin: 1.25rem auto 0; padding: 1rem 1.25rem; border: 1px solid var(--line); border-radius: 12px; text-align: left; }
+.event-title { margin: 0 0 .5rem !important; font: italic 500 1.35rem/1.2 var(--serif); color: var(--gold); }
+.event-list { margin: 0; padding: 0; list-style: none; }
+.event-list li { display: flex; align-items: center; gap: .85rem; padding: .5rem 0; font-weight: 400; }
+.event-list li + li { border-top: 1px solid rgba(201, 163, 107, .18); }
+.ic.ic-sm { width: 38px; height: 38px; margin: 0; flex: none; box-shadow: none; }
+.ic.ic-sm svg { width: 22px; height: 22px; }
+.closing { margin-top: 1.25rem !important; font-style: italic; color: var(--champagne); }
 
 /* ---------- Pie de página ---------- */
 .footer {
@@ -317,17 +352,11 @@ input[type="text"]:focus-visible { border-color: var(--gold); outline-offset: 2p
 .footer > :not(.fx) { position: relative; z-index: 1; }
 .fx-corner-rock { left: 0; bottom: 0; width: var(--rw); }
 .fx-corner-curve { left: 0; bottom: 0; width: calc(var(--rw) * .62); }
-.privacy { display: flex; gap: .5rem; align-items: flex-start; justify-content: center; max-width: 46ch; margin: 1.5rem auto 0; text-align: left; }
-.privacy svg { width: 18px; height: 18px; flex: none; margin-top: .15rem; }
 
 /* ---------- Pantallas más grandes ---------- */
 @media (min-width: 768px) {
   .section { padding: 5.5rem 2rem; }
-  /* Tarjetas a todo el ancho, ícono a la izquierda y contenido a la derecha */
-  .card { display: grid; grid-template-columns: 64px 1fr; column-gap: 1.5rem; align-items: start; padding: 1.75rem 2rem; text-align: left; }
-  .card > * { grid-column: 2; justify-self: start; }
-  .card > .ic { grid-column: 1; grid-row: 1 / span 9; margin: 0; }
-  .card > .people { justify-self: stretch; }
+  .card { padding: 2rem 2.5rem; }
   .fx-crystal { top: 1.5rem; right: 5vw; }
   .deco { --side: calc((100% - 100vw) / 2 + 3vw); --side: calc((100% - 100cqw) / 2 + 3cqw); top: 30%; height: 120px; }
 }
@@ -343,3 +372,15 @@ input[type="text"]:focus-visible { border-color: var(--gold); outline-offset: 2p
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* Logo del evento en la portada (reemplaza al título de texto) */
+.title-img { margin: 1rem 0 1.25rem; }
+.title-img img { display: block; width: min(100%, 420px); height: auto; margin: 0 auto; }
+.phrase { margin: 0; font: italic 500 clamp(2rem, 8.5vw, 3rem)/1.15 var(--serif); text-wrap: balance; }
+.intro { margin-top: 1rem; }
+
+/* Buscador: lupa dentro del campo y nota de años */
+.combo-ic { position: absolute; left: 1rem; top: 50%; width: 20px; height: 20px; translate: 0 -50%; pointer-events: none;
+  fill: none; stroke: var(--gold-mid); stroke-width: 2.4; stroke-linecap: round; }
+.combo input { padding-left: 2.85rem; }
+.note-years { margin: 1.5rem 0 0; font-size: .85rem; font-style: italic; color: var(--champagne); }

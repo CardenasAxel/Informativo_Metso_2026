@@ -2,17 +2,32 @@
  * CONFIGURACIÓN EDITABLE
  * - APPS_SCRIPT_URL: URL /exec de la aplicación web de Apps Script que lee la hoja
  *   (ver GUIA_GOOGLE_SHEETS.md).
- * - Vacío = MODO DEMO: la página usa los datos FICTICIOS de "demo".
+ * - Vacío = MODO DEMO: las páginas usan los datos FICTICIOS de "demo".
  */
 const CONFIG = Object.freeze({
   APPS_SCRIPT_URL: "",
 
-  // Mismas columnas que la hoja "Personas". Solo nombres inventados: nunca poner datos reales aquí.
-  demo: [
-    { nombre: "Ana Torres Ríos", rol: "Homenajeado", anios: "25", homenajeadoPor: "Carlos Mendoza Paz", mensaje: "" },
-    { nombre: "Luis Quispe Huamán", rol: "Homenajeado", anios: "10", homenajeadoPor: "Carlos Mendoza Paz", mensaje: "Diez años haciendo que todo funcione. ¡Gracias, Luis!" },
-    { nombre: "Carlos Mendoza Paz", rol: "Homenajeado", anios: "15", homenajeadoPor: "Jorge Ramos León", mensaje: "" },
-    { nombre: "María Salas Vega", rol: "Invitado especial", anios: "", homenajeadoPor: "", mensaje: "" },
-    { nombre: "Rosa Díaz Campos", rol: "", anios: "", homenajeadoPor: "", mensaje: "" }
-  ]
+  // Misma forma que responde Code.gs. Solo nombres inventados: nunca poner datos reales aquí.
+  demo: {
+    // Pestaña "Homenajeados" → página /homenajeados
+    homenajeados: [
+      { nombre: "Ana Torres Ríos", anios: "30" },
+      { nombre: "Luis Quispe Huamán", anios: "10" },
+      { nombre: "Carlos Mendoza Paz", anios: "5" },
+      { nombre: "Elena Vargas Soto", anios: "20" },
+      { nombre: "Pedro Rojas Lima", anios: "15" },
+      { nombre: "Sofía Paredes Gil", anios: "5" },
+      { nombre: "Raúl Chávez Ortiz", anios: "5" }
+    ],
+    // Pestaña "Jefatura" → página /homenajes (jefe y supervisor entregan el reconocimiento)
+    homenajes: [
+      { jefe: "Jorge Ramos", supervisor: "Rosa Díaz", nombre: "Ana Torres Ríos", anios: "30" },
+      { jefe: "Jorge Ramos", supervisor: "Rosa Díaz", nombre: "Luis Quispe Huamán", anios: "10" },
+      { jefe: "Jorge Ramos", supervisor: "", nombre: "Carlos Mendoza Paz", anios: "5" },
+      { jefe: "Jorge Ramos", supervisor: "", nombre: "Sofía Paredes Gil", anios: "5" },
+      { jefe: "Jorge Ramos", supervisor: "", nombre: "Raúl Chávez Ortiz", anios: "5" },
+      { jefe: "María Salas", supervisor: "Jorge Ramos", nombre: "Elena Vargas Soto", anios: "20" },
+      { jefe: "María Salas", supervisor: "María Salas", nombre: "Pedro Rojas Lima", anios: "15" }
+    ]
+  }
 });
