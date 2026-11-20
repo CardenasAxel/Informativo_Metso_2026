@@ -5,7 +5,7 @@
  * - Vacío = MODO DEMO: las páginas usan los datos FICTICIOS de "demo".
  */
 const CONFIG = Object.freeze({
-  APPS_SCRIPT_URL: "",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzrhn7Rq4aq81pZWHkjZ7_5mo5ujGu4CAZ5ckHjVmChkAtXnIPzPl2EJg1C7QIqbQ-X/exec",
 
   // Misma forma que responde Code.gs. Solo nombres inventados: nunca poner datos reales aquí.
   demo: {
